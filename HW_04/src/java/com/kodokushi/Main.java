@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Random;
@@ -34,13 +35,14 @@ public class Main {
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-            String response = readHtmlFile("src/resources/view/news.html");
+            String response = readHtmlFile();
             Random randomGenerator = new Random();
-            response = setOptionSelected(response, randomGenerator.nextInt(51));
-            response = insertContent(response, "class", "content", getContent(34) + "\n");
+            int rand = randomGenerator.nextInt(51);
+            response = setOptionSelected(response, rand);
+            response = insertContent(response, "class", "content", getContent(rand) + "\n");
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
-            os.write(response.getBytes());
+            os.write(response.getBytes("Windows-1251"));
             os.close();
         }
     }
@@ -61,11 +63,10 @@ public class Main {
             } while (!inputLine.contains("<a class=\"anewsli\""));
             int firstIndex = 0;
             for (int i = 0; i < counter; i++) {
-                firstIndex = inputLine.indexOf("<li", firstIndex);
+                firstIndex = inputLine.indexOf("<li", firstIndex + 2);
             }
             String news = inputLine.substring(firstIndex + 19, inputLine.indexOf("</li>", firstIndex));
             content = news.substring(24, 29) + " " + news.substring(63, news.lastIndexOf('<'));
-            String cls = "";
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -98,13 +99,12 @@ public class Main {
 
     /**
      * Считывает файл в строку
-     * @param filePath путь к файлу
      * @return содержимое файла в виде строки
      */
-    static String readHtmlFile(String filePath) {
+    static String readHtmlFile() {
         String content = "";
         try {
-            content = new String(Files.readAllBytes(Path.of(filePath)));
+            content = new String(Files.readAllBytes(Path.of("src/resources/view/news.html")));
         } catch (IOException e) {
             e.printStackTrace();
         }
