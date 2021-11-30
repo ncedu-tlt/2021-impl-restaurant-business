@@ -34,13 +34,12 @@ public class Main {
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            String response = readHtmlFile();
-            Random randomGenerator = new Random();
-            response = setOptionSelected(response, randomGenerator.nextInt(51));
-            response = insertContent(response, getContent(getRequestNumber(exchange)) + "\n");
+            StringBuilder response = new StringBuilder(readHtmlFile());
+            setOptionSelected(response, new Random().nextInt(51));
+            insertContent(response, getNews(getRequestNumber(exchange)) + "\n");
             exchange.sendResponseHeaders(200, response.length());
             OutputStream os = exchange.getResponseBody();
-            os.write(response.getBytes("Windows-1251"));
+            os.write(response.toString().getBytes("Windows-1251"));
             os.close();
         }
     }
@@ -50,7 +49,7 @@ public class Main {
      * @param counter номер новости
      * @return строку с датой и заголовком новости
      */
-    static String getContent(int counter) {
+    static String getNews(int counter) {
         String content = "";
         try {
             URL site = new URL("http://news.olegmakarenko.ru/news");
@@ -63,7 +62,10 @@ public class Main {
             for (int i = 0; i < counter; i++) {
                 firstIndex = inputLine.indexOf("<li", firstIndex + 2);
             }
+            // 19 - длина открывающего тега <li class="newsli">
             String news = inputLine.substring(firstIndex + 19, inputLine.indexOf("</li>", firstIndex));
+            // news представляет собой строку вида <span class="shortdate">09:27</span><span class="headlinetext">Текст новости</span>
+            // substring(24, 29) извлекает дату (09:27), substring(63, lastIndex('<')) извлекает текст новости
             content = news.substring(24, 29) + " " + news.substring(63, news.lastIndexOf('<'));
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,25 +77,25 @@ public class Main {
      * Вставляет контент в тело тега с соответствующим селектором
      * @param response рабочая строка
      * @param content вставляемый контент
-     * @return измененная рабочая строка
      */
-    static String insertContent(String response, String content) {
-        return new StringBuilder(response).insert(response.indexOf(">", response.indexOf("class=\"content\""))
-                + 1, content).toString();
+    static void insertContent(StringBuilder response, String content) {
+        response.insert(response.indexOf(">", response.indexOf("class=\"content\"")) + 1, content);
     }
 
     /**
      * Устанавливает атрибут "selected" для определенного "<option>"
      * @param response рабочая строка
      * @param optionValue значение value в <option>
-     * @return измененная рабочая строка
      */
-    static String setOptionSelected(String response, int optionValue) {
-        return new StringBuilder(response).insert(response.indexOf(">", response.indexOf("value=\"" + optionValue +
-                "\"")), " selected").toString();
+    static void setOptionSelected(StringBuilder response, int optionValue) {
+        response.insert(response.indexOf(">", response.indexOf("value=\"" + optionValue + "\"")), " selected");
     }
 
-
+    /**
+     * Возвращает значение переменной number, переданной в GET-запросе
+     * @param exchange -
+     * @return значение number
+     */
     public static int getRequestNumber(HttpExchange exchange) {
         String requestResult = exchange.getRequestURI().getQuery();
         return Integer.parseInt(requestResult.substring(requestResult.indexOf("=") + 1));
