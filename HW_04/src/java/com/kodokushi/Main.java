@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Random;
@@ -34,14 +33,13 @@ public class Main {
 
     static class MyHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange t) throws IOException {
+        public void handle(HttpExchange exchange) throws IOException {
             String response = readHtmlFile();
             Random randomGenerator = new Random();
-            int rand = randomGenerator.nextInt(51);
-            response = setOptionSelected(response, rand);
-            response = insertContent(response, "class", "content", getContent(rand) + "\n");
-            t.sendResponseHeaders(200, response.length());
-            OutputStream os = t.getResponseBody();
+            response = setOptionSelected(response, randomGenerator.nextInt(51));
+            response = insertContent(response, getContent(getRequestNumber(exchange)) + "\n");
+            exchange.sendResponseHeaders(200, response.length());
+            OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes("Windows-1251"));
             os.close();
         }
@@ -76,14 +74,12 @@ public class Main {
     /**
      * Вставляет контент в тело тега с соответствующим селектором
      * @param response рабочая строка
-     * @param selector название селектора
-     * @param selectorValue значение селектора
      * @param content вставляемый контент
      * @return измененная рабочая строка
      */
-    static String insertContent(String response, String selector, String selectorValue, String content) {
-        return new StringBuilder(response).insert(response.indexOf(">", response.indexOf(selector + "=\"" + selectorValue +
-                "\"")) + 1, content).toString();
+    static String insertContent(String response, String content) {
+        return new StringBuilder(response).insert(response.indexOf(">", response.indexOf("class=\"content\""))
+                + 1, content).toString();
     }
 
     /**
@@ -95,6 +91,12 @@ public class Main {
     static String setOptionSelected(String response, int optionValue) {
         return new StringBuilder(response).insert(response.indexOf(">", response.indexOf("value=\"" + optionValue +
                 "\"")), " selected").toString();
+    }
+
+
+    public static int getRequestNumber(HttpExchange exchange) {
+        String requestResult = exchange.getRequestURI().getQuery();
+        return Integer.parseInt(requestResult.substring(requestResult.indexOf("=") + 1));
     }
 
     /**
