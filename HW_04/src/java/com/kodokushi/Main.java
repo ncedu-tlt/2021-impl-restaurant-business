@@ -51,24 +51,26 @@ public class Main {
      */
     static String getNews(int counter) {
         String content = "";
-        try {
-            URL site = new URL("http://news.olegmakarenko.ru/news");
-            BufferedReader input = new BufferedReader(new InputStreamReader(site.openStream()));
-            String inputLine;
-            do {
-                inputLine = input.readLine();
-            } while (!inputLine.contains("<a class=\"anewsli\""));
-            int firstIndex = 0;
-            for (int i = 0; i < counter; i++) {
-                firstIndex = inputLine.indexOf("<li", firstIndex + 2);
+        if (counter > 0) {
+            try {
+                URL site = new URL("http://news.olegmakarenko.ru/news");
+                BufferedReader input = new BufferedReader(new InputStreamReader(site.openStream()));
+                String inputLine;
+                do {
+                    inputLine = input.readLine();
+                } while (!inputLine.contains("<a class=\"anewsli\""));
+                int firstIndex = 0;
+                for (int i = 0; i < counter; i++) {
+                    firstIndex = inputLine.indexOf("<li", firstIndex + 2);
+                }
+                // 19 - длина открывающего тега <li class="newsli">
+                String news = inputLine.substring(firstIndex + 19, inputLine.indexOf("</li>", firstIndex));
+                // news представляет собой строку вида <span class="shortdate">09:27</span><span class="headlinetext">Текст новости</span>
+                // substring(24, 29) извлекает дату (09:27), substring(63, lastIndex('<')) извлекает текст новости
+                content = news.substring(24, 29) + " " + news.substring(63, news.lastIndexOf('<'));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            // 19 - длина открывающего тега <li class="newsli">
-            String news = inputLine.substring(firstIndex + 19, inputLine.indexOf("</li>", firstIndex));
-            // news представляет собой строку вида <span class="shortdate">09:27</span><span class="headlinetext">Текст новости</span>
-            // substring(24, 29) извлекает дату (09:27), substring(63, lastIndex('<')) извлекает текст новости
-            content = news.substring(24, 29) + " " + news.substring(63, news.lastIndexOf('<'));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return content;
     }
@@ -98,7 +100,8 @@ public class Main {
      */
     public static int getRequestNumber(HttpExchange exchange) {
         String requestResult = exchange.getRequestURI().getQuery();
-        return Integer.parseInt(requestResult.substring(requestResult.indexOf("=") + 1));
+        return (requestResult == null || requestResult.equals("0")) ? 0 : Integer.parseInt(
+                requestResult.substring(requestResult.indexOf("=") + 1));
     }
 
     /**
