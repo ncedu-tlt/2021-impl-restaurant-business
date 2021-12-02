@@ -37,8 +37,9 @@ public class Main {
     public static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            StringBuilder response = new StringBuilder(readHtmlFile());
-            setOptionSelected(response, new Random().nextInt(0, 48));
+            StringBuilder response = new StringBuilder(new String(Files.readAllBytes(Path.of(
+                    "src/main/resources/view/news.html"))));
+            setOptionSelected(response, new Random().nextInt(1, 50));
             setNews(response, getRequestNumber(exchange) - 1);
             exchange.sendResponseHeaders(200, response.length());
             OutputStream os = exchange.getResponseBody();
@@ -52,16 +53,16 @@ public class Main {
      * @param newsId номер новости
      */
     public static void setNews(StringBuilder response, int newsId) {
-        if (newsId > 0) {
-            try {
-                Parser parser = new Parser("http://news.olegmakarenko.ru/news");
-                NodeList nodeList = parser.parse(new TagNameFilter("LI"));
+        try {
+            NodeList nodeList = new Parser("http://news.olegmakarenko.ru/news").parse(new TagNameFilter("LI"));
+            System.out.println(nodeList.size() + " " + newsId);
+            if (nodeList.size() > newsId && newsId >= 0) {
                 response.insert(response.indexOf(">", response.indexOf("textarea")) + 1,
                         nodeList.elementAt(newsId).getFirstChild().getChildren().toHtml() + " " +
-                                nodeList.elementAt(newsId).getLastChild().getChildren().toHtml());
-            } catch (ParserException e) {
-                e.printStackTrace();
+                        nodeList.elementAt(newsId).getLastChild().getChildren().toHtml());
             }
+        } catch (ParserException e) {
+            e.printStackTrace();
         }
     }
 
@@ -83,19 +84,5 @@ public class Main {
         String requestResult = exchange.getRequestURI().getQuery();
         return (requestResult == null || requestResult.equals("0")) ? 0 : Integer.parseInt(
                 requestResult.substring(requestResult.indexOf("=") + 1));
-    }
-
-    /**
-     * Считывает файл в строку
-     * @return содержимое файла в виде строки
-     */
-    public static String readHtmlFile() {
-        String content = "";
-        try {
-            content = new String(Files.readAllBytes(Path.of("src/main/resources/view/news.html")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return content;
     }
 }
