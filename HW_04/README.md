@@ -1,0 +1,1 @@
+### Консольное Golang приложение: CRUD - Create Read Update Delete операции. 1я часть: Go-коллекции (array/slice/map).
