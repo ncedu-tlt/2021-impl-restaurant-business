@@ -1,18 +1,33 @@
 package controller
 
-type State int
-const (
-	_ State = iota
-	Create
-	Read
-	Update
-	Delete
+import (
+	"HW_05/table"
+	"strings"
 )
 
 type Controller struct {
-	state State
+	tables map[string]table.Table
 }
 
-func (c Controller) SetState(state State) {
-	c.state = state
+func createController() *Controller {
+	c := &Controller {
+		tables: make(map[string]table.Table),
+	}
+	return c
+}
+
+func (c *Controller) executeCommand(command string, level int) {
+
+}
+
+func (c *Controller) createTable(name string, columnNames string)  {
+	c.tables[name] = *table.CreateTable(strings.Split(columnNames, " "))
+}
+
+func (c *Controller) createRow(tableName string, rowContent string) {
+	if _, found := c.tables[tableName]; found {
+		c.tables[tableName] = c.tables[tableName].CreateRow(strings.Split(rowContent, " "))
+	} else {
+
+	}
 }
