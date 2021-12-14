@@ -31,6 +31,9 @@ func main() {
 			fmt.Println("===============")
 			var n int
 			fmt.Scan(&n)
+
+			// здесь желательна проверка на несуществующий номер
+
 			menu = append(menu[:n-1], menu[n:]...)
 			fmt.Println("Теперь меню выглядит так:")
 			fmt.Println("===============")
@@ -44,7 +47,7 @@ func main() {
 			fmt.Println("Какое блюдо хочешь добавить (новое блюдо добавиться в конец меню)?")
 			var nw string
 			fmt.Scan(&nw)
-			menu = append(menu,nw)
+			menu = append(menu, nw)
 			fmt.Println("Теперь меню выглядит так:")
 			fmt.Println("===============")
 			for _, value := range menu {
@@ -62,10 +65,13 @@ func main() {
 			fmt.Println("===============")
 			var r int
 			fmt.Scan(&r)
+
+			// здесь желательна проверка на несуществующий номер
+
 			fmt.Println("Окей, на что хочешь изменить?")
 			var re string
 			fmt.Scan(&re)
-			menu[r-1]=re
+			menu[r-1] = re
 			fmt.Println("===============")
 			for _, value := range menu {
 				fmt.Println("-" + value + "-")
@@ -76,6 +82,9 @@ func main() {
 		if x < 1 || x > 4 {
 			fmt.Println("Ошибка! Введи номер действия (1,2,3 или 4)")
 		}
+
+		// нужно избегать дублирования кода или оформлять в виде функции;
+		// здесь можно избежать дублирования, переместив этот код в начало цикла
 		fmt.Print("Сейчас в меню ")
 		fmt.Print(len(menu))
 		fmt.Println(" блюд(а)")
