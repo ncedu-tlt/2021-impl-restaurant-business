@@ -22,7 +22,7 @@ func createOperation(db *sqlx.DB) {
 			return
 		case "1":
 			var columnValues string
-			fmt.Print("Введите значения столбцов через пробел(без id): ")
+			fmt.Print("Введите значения столбцов \"имя\", \"фамилия\", \"отчество\" через пробел: ")
 			in := bufio.NewReader(os.Stdin)
 			columnValues, _ = in.ReadString('\n')
 			database.InsertRow(db, strings.Split(columnValues, " "))
@@ -135,9 +135,38 @@ func controller(command string, db *sqlx.DB) {
 	}
 }
 
+func getConnection() *sqlx.DB {
+	var host string
+	fmt.Print("Настройка подключения\nВведите имя хоста: ")
+	_, _ = fmt.Scan(&host)
+
+	var user string
+	fmt.Print("Введите имя пользователя: ")
+	_, _ = fmt.Scan(&user)
+
+	var password string
+	fmt.Print("Введите пароль: ")
+	_, _ = fmt.Scan(&password)
+
+	var dbName string
+	fmt.Print("Введите имя БД: ")
+	_, _ = fmt.Scan(&dbName)
+
+	var port string
+	fmt.Print("Введите порт: ")
+	_, _ = fmt.Scan(&port)
+
+	var sslMode string
+	fmt.Print("Введите режим ssl: ")
+	_, _ = fmt.Scan(&sslMode)
+
+	// "localhost", "root", "root", "test_db", "5432", "disable"
+	return database.ConnectDatabase(host, user, password, dbName, port, sslMode)
+}
+
 func main() {
-	db := database.ConnectDatabase("localhost", "root", "root", "test_db", "5432", "disable", "Europe/Samara")
-	fmt.Println("Список команд:\n(0) Выход\n(1) создание\n(2) чтение \n(3) обновление \n(4) удаление")
+	db := getConnection()
+	fmt.Println("\nСписок команд:\n(0) Выход\n(1) создание\n(2) чтение \n(3) обновление \n(4) удаление")
 	var command string
 	for ; ; {
 		fmt.Print(" > ")
