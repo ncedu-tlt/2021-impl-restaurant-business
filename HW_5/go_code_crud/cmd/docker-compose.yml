@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  postgres-db-service:
+    image: postgres
+    container_name: postgres_db_service
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - TZ=Europe/Samara
+    volumes:
+      - postgresql_data:/var/lib/postgresql/postgresql_data
+      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthchck:
+      test: "exit 0"
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgresql_data:
