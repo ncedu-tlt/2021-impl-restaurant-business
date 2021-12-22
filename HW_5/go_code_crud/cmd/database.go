@@ -70,54 +70,54 @@ func main() {
 			} else {
 				fmt.Println("Блюдо не было удалено")
 			}
-			if num == 3 {
-
-				var name string
-				fmt.Println("Введи название нового блюда (оно добавиться в конец меню):")
-				fmt.Scan(&name)
-				_, err := db.Exec("INSERT INTO menu (name) VALUES ($1)", name)
-
-				if err != nil {
-
-					fmt.Println("Новое блюдо не добавлено ", err)
-
-					continue
-				}
-				fmt.Println("Добавлено новое блюдо")
-
-			}
-
-			if num == 4 {
-
-				var id int
-				var nw string
-				fmt.Println("Введи номер блюда для изменения:")
-				fmt.Scan(&id)
-				fmt.Println("Введи новое блюдо:")
-				fmt.Scan(&nw)
-
-				res, err := db.Exec("UPDATE menu SET name = ($1) where id = ($2)", nw, id)
-
-				if err != nil {
-
-					fmt.Println("Меню не изменено", err)
-					continue
-				}
-
-				if rowCount, _ := res.RowsAffected(); rowCount > 0 {
-					fmt.Printf("Блюдо с номером %d изменено на %s\n", id, nw)
-				} else {
-					fmt.Printf("Ошибка: Блюдо с номером %d не изменено\n", id)
-				}
-
-			}
-			if num == 5 {
-				os.Exit(0)
-			}
-			if num < 1 || num > 5 {
-				fmt.Println("Ошибка!")
-			}
 		}
-		db.Close()
+		if num == 3 {
+
+			var name string
+			fmt.Println("Введи название нового блюда (оно добавиться в конец меню):")
+			fmt.Scan(&name)
+			_, err := db.Exec("INSERT INTO menu (name) VALUES ($1)", name)
+
+			if err != nil {
+
+				fmt.Println("Новое блюдо не добавлено ", err)
+
+				continue
+			}
+			fmt.Println("Добавлено новое блюдо")
+
+		}
+
+		if num == 4 {
+
+			var id int
+			var nw string
+			fmt.Println("Введи номер блюда для изменения:")
+			fmt.Scan(&id)
+			fmt.Println("Введи новое блюдо:")
+			fmt.Scan(&nw)
+
+			res, err := db.Exec("UPDATE menu SET name = ($1) where id = ($2)", nw, id)
+
+			if err != nil {
+
+				fmt.Println("Меню не изменено", err)
+				continue
+			}
+
+			if rowCount, _ := res.RowsAffected(); rowCount > 0 {
+				fmt.Printf("Блюдо с номером %d изменено на %s\n", id, nw)
+			} else {
+				fmt.Printf("Ошибка: Блюдо с номером %d не изменено\n", id)
+			}
+
+		}
+		if num == 5 {
+			os.Exit(0)
+		}
+		if num < 1 || num > 5 {
+			fmt.Println("Ошибка!")
+		}
 	}
+	db.Close()
 }
