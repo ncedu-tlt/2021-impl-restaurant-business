@@ -1,0 +1,82 @@
+================================================================================================================================================
+                                                        WORKERS
+================================================================================================================================================
+GET http://localhost:8084/hr/workers  - get all workers
+
+GET http://localhost:8084/hr/workers/1  - get 1st worker
+
+POST http://localhost:8084/hr/workers
+Content-Type: application/json - add worker
+{
+  "positionId": 1,
+  "name": "Andrey",
+  "patronymic": "Andreev",
+  "email": "Andrey@gmail.com",
+  "phone": "12345",
+  "salary": 123.4,
+  "isWorking": true
+}
+
+UPDATE http://localhost:8084/hr/workers/1
+Content-Type: application/json - update 1st worker
+{
+  "positionId": x,
+  "name": "x",
+  "patronymic": "x",
+  "email": "x",
+  "phone": "x",
+  "salary": x,
+  "isWorking": x
+}
+
+DELETE http://localhost:8084/hr/workers/1 - delete 1st worker
+
+GET http://localhost:8084/hr/workers/working/1 - get working worker with position 1
+
+================================================================================================================================================
+                                                        SHEDULES
+================================================================================================================================================
+GET http://localhost:8084/hr/shedules  - get all shedules
+
+GET http://localhost:8084/hr/shedules/1  - get 1st shedule
+
+POST http://localhost:8084/hr/shedules
+Content-Type: application/json - add shedule
+{
+    "id" : 1,
+    "hoursPerWeek" : 5.5,
+    "vacationDays" : 6,
+    "vacationSchedule" : 7
+}
+
+UPDATE http://localhost:8084/hr/shedules/1
+Content-Type: application/json - update 1st shedule
+{
+    "id" : x,
+    "hoursPerWeek" : x,
+    "vacationDays" : x,
+    "vacationSchedule" : x
+}
+
+DELETE http://localhost:8084/hr/shedules/1 - delete 1st shedule
+
+================================================================================================================================================
+                                                        POSITIONS
+================================================================================================================================================
+GET http://localhost:8084/hr/positions  - get all positions
+
+GET http://localhost:8084/hr/positions/1  - get 1st position
+
+POST http://localhost:8084/hr/positions
+Content-Type: application/json - add position
+{
+    "position" : "Директор"
+}
+
+UPDATE http://localhost:8084/hr/positions/1
+Content-Type: application/json - update 1st position
+{
+    "position" : "x"
+}
+
+DELETE http://localhost:8084/hr/positions/1 - delete 1st position
