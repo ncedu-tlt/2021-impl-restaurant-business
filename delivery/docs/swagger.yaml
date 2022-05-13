@@ -1,0 +1,664 @@
+basePath: /
+definitions:
+  model.Order:
+    properties:
+      address:
+        type: string
+      cost:
+        type: integer
+      id:
+        type: integer
+      order_status:
+        $ref: '#/definitions/model.OrderStatus'
+      payment_status:
+        type: boolean
+      payment_type:
+        $ref: '#/definitions/model.PaymentType'
+    type: object
+  model.OrderStatus:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.OrderToDish:
+    properties:
+      dish_id:
+        type: integer
+      order_id:
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  model.PaymentType:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  service.orderInputOnCreate:
+    properties:
+      address:
+        type: string
+      cost:
+        type: integer
+      order_status_id:
+        minimum: 1
+        type: integer
+      payment_status:
+        type: boolean
+      payment_type_id:
+        minimum: 1
+        type: integer
+    required:
+    - address
+    - cost
+    - order_status_id
+    - payment_status
+    - payment_type_id
+    type: object
+  service.orderInputOnUpdate:
+    properties:
+      address:
+        type: string
+      cost:
+        type: integer
+      order_status_id:
+        minimum: 1
+        type: integer
+      payment_status:
+        type: boolean
+      payment_type_id:
+        minimum: 1
+        type: integer
+    type: object
+  service.orderStatusInput:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  service.orderToDishInputOnCreate:
+    properties:
+      dish_id:
+        type: integer
+      order_id:
+        type: integer
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - dish_id
+    - order_id
+    - quantity
+    type: object
+  service.orderToDishInputOnUpdate:
+    properties:
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - quantity
+    type: object
+  service.paymentTypeInput:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Delivery microservice's API for CRM
+  title: impl-crm-delivery
+  version: "1.0"
+paths:
+  /all/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns list of all OrderToDish relations
+      operationId: find-all-orders-to-dish
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.OrderToDish'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: FindDishesByOrderId
+      tags:
+      - OrderToDish
+  /dishes/dish/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes order to dish relations by order id
+      operationId: delete-all-order-to-dishes
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: Empty
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: DeleteDishesByOrderId
+      tags:
+      - OrderToDish
+  /dishes/dish/delete/{order_id}/{dish_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes order to dish relation by order id and dish id
+      operationId: delete-order-to-dishes
+      parameters:
+      - description: order_id
+        in: path
+        name: order_id
+        required: true
+        type: integer
+      - description: dish_id
+        in: path
+        name: dish_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: Empty
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: DeleteDishByOrderIdAndDishId
+      tags:
+      - OrderToDish
+  /dishes/dish/update/{order_id}/{dish_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Updates OrderToDish relation by order id and dish id
+      operationId: update-order-to-dish
+      parameters:
+      - description: order_id
+        in: path
+        name: order_id
+        required: true
+        type: integer
+      - description: dish_id
+        in: path
+        name: dish_id
+        required: true
+        type: integer
+      - description: orderToDishInputOnUpdate
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/service.orderToDishInputOnUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: Empty
+        "400":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+      summary: UpdateDishByOrderIdAndDishId
+      tags:
+      - OrderToDish
+  /dishes/new:
+    post:
+      consumes:
+      - application/json
+      description: Create new OrderToDish relation
+      operationId: create-order-to-dish
+      parameters:
+      - description: orderToDishInputOnCreate
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/service.orderToDishInputOnCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: Empty
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: CreateOrderToDish
+      tags:
+      - OrderToDish
+  /order-statuses/all:
+    get:
+      consumes:
+      - application/json
+      description: Returns list of all order statuses
+      operationId: find-all-order-statuses
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.OrderStatus'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: FindAllOrderStatuses
+      tags:
+      - OrderStatus
+  /order-statuses/new:
+    post:
+      consumes:
+      - application/json
+      description: Creates new order status
+      operationId: create-order-status
+      parameters:
+      - description: orderStatusInput
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/service.orderStatusInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: CreateOrderStatus
+      tags:
+      - OrderStatus
+  /order-statuses/status/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns order status by ID
+      operationId: find-order-status-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.OrderStatus'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: FindOrderStatusById
+      tags:
+      - OrderStatus
+  /order-statuses/status/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes order status by ID
+      operationId: delete-order-status-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: DeleteOrderStatusById
+      tags:
+      - OrderStatus
+  /order-statuses/status/update/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Updates order status by ID
+      operationId: update-order-status-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: orderStatusInput
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/service.orderStatusInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: Empty
+        "400":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+      summary: UpdateOrderStatusById
+      tags:
+      - OrderStatus
+  /order/orders/update/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Updates order by ID
+      operationId: update-order-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: orderInputOnUpdate
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/service.orderInputOnUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: Empty
+        "400":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+      summary: UpdateOrderById
+      tags:
+      - Order
+  /orders/all:
+    get:
+      consumes:
+      - application/json
+      description: Returns list of all orders
+      operationId: find-all-orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Order'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: FindAllOrders
+      tags:
+      - Order
+  /orders/new:
+    post:
+      consumes:
+      - application/json
+      description: Create new order
+      operationId: create-order
+      parameters:
+      - description: orderInputOnCreate
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/service.orderInputOnCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: Empty
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: CreateOrder
+      tags:
+      - Order
+  /orders/order/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns order info by ID
+      operationId: find-orders-by-id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Order'
+        "400":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+      summary: FindOrderById
+      tags:
+      - Order
+  /orders/order/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes order info by ID
+      operationId: delete-order-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: Empty
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: DeleteOrderById
+      tags:
+      - Order
+  /payment-types/all:
+    get:
+      consumes:
+      - application/json
+      description: Returns list of all payment types
+      operationId: find-all-payment-types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.PaymentType'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: FindAllPaymentTypes
+      tags:
+      - PaymentType
+  /payment-types/new:
+    post:
+      consumes:
+      - application/json
+      description: Creates new payment type
+      operationId: create-payment-type
+      parameters:
+      - description: paymentTypeInput
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/service.paymentTypeInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: CreatePaymentType
+      tags:
+      - PaymentType
+  /payment-types/type/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns payment type by ID
+      operationId: find-payment-type-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PaymentType'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: FindPaymentTypeById
+      tags:
+      - PaymentType
+  /payment-types/type/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes payment type by ID
+      operationId: delete-payment-type-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: DeletePaymentTypeById
+      tags:
+      - PaymentType
+  /payment-types/type/update/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Updates payment type by ID
+      operationId: update-payment-type-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: paymentTypeInput
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/service.paymentTypeInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: Empty
+        "400":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+      summary: UpdatePaymentTypeById
+      tags:
+      - PaymentType
+swagger: "2.0"
